@@ -32,9 +32,8 @@ resource "azurerm_monitor_diagnostic_setting" "diagnostic_settings" {
     content {
       category       = enabled_log.value.category
       category_group = enabled_log.value.category_group
-      enabled        = enabled_log.value.enabled
       dynamic "retention_policy" {
-        for_each = enabled_log.value.retention_policy
+        for_each = enabled_log.value.retention_policy != null ? [enabled_log.value.retention_policy] : []
         content {
           enabled = retention_policy.value.enabled
           days    = retention_policy.value.days
@@ -48,8 +47,9 @@ resource "azurerm_monitor_diagnostic_setting" "diagnostic_settings" {
     content {
       category = metric.value.category
       enabled  = metric.value.enabled
+
       dynamic "retention_policy" {
-        for_each = metric.value.retention_policy
+        for_each = metric.value.retention_policy != null ? [metric.value.retention_policy] : []
         content {
           enabled = retention_policy.value.enabled
           days    = retention_policy.value.days

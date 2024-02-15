@@ -20,7 +20,6 @@ variable "enabled_log" {
   type = list(object({
     category       = optional(string)
     category_group = optional(string)
-    enabled        = optional(bool)
     retention_policy = optional(object({
       enabled = optional(bool)
       days    = optional(number)
@@ -44,7 +43,8 @@ variable "eventhub_name" {
 
 variable "law_destination_type" {
   type        = string
-  description = "null"
+  description = "Destination type for log analytics"
+  default = null
 }
 
 variable "law_id" {

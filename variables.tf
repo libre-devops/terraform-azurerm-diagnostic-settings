@@ -1,19 +1,98 @@
-variable "location" {
-  description = "The location for this resource to be put in"
+variable "diagnostic_settings_name" {
   type        = string
+  description = "The name of the diagnostic settings"
+  default     = null
 }
 
-variable "name" {
-  type        = string
-  description = "The name of the VNet gateway"
+variable "enable_all_logs" {
+  type        = bool
+  description = "Whether the allLogs category is enabled"
+  default     = true
 }
 
-variable "rg_name" {
-  description = "The name of the resource group, this module does not create a resource group, it is expecting the value of a resource group already exists"
-  type        = string
+variable "enable_all_metrics" {
+  type        = bool
+  description = "Whether the AllMetric category is enabled"
+  default     = true
 }
 
-variable "tags" {
-  type        = map(string)
-  description = "A map of the tags to use on the resources that are deployed with this module."
+variable "enabled_log" {
+  type = list(object({
+    category       = optional(string)
+    category_group = optional(string)
+    enabled        = optional(bool)
+    retention_policy = optional(object({
+      enabled = optional(bool)
+      days    = optional(number)
+    }))
+  }))
+  description = "The enabled_log blocks"
+  default     = []
+}
+
+variable "eventhub_authorization_rule_id" {
+  type        = string
+  description = "The rule id of the eventhub, if used"
+  default     = null
+}
+
+variable "eventhub_name" {
+  type        = string
+  description = "The name of the eventhub, if used"
+  default     = null
+}
+
+variable "law_destination_type" {
+  type        = string
+  description = "null"
+}
+
+variable "law_id" {
+  type        = string
+  description = "The ID of a log analytics workspace, if used"
+  default     = null
+}
+
+variable "log" {
+  type = list(object({
+    category       = optional(string)
+    category_group = optional(string)
+    enabled        = optional(bool)
+    retention_policy = optional(object({
+      enabled = optional(bool)
+      days    = optional(number)
+    }))
+  }))
+  description = "The log blocks, which are deprecated"
+  default     = []
+}
+
+variable "metric" {
+  type = list(object({
+    category = optional(string)
+    enabled  = optional(bool)
+    retention_policy = optional(object({
+      enabled = optional(bool)
+      days    = optional(number)
+    }))
+  }))
+  description = "The metric blocks"
+  default     = []
+}
+
+variable "partner_solution_id" {
+  type        = string
+  description = "The id of a partnter solution, if used"
+  default     = null
+}
+
+variable "storage_account_id" {
+  type        = string
+  description = "The ID of a storage account to send logs to, if used"
+  default     = null
+}
+
+variable "target_resource_id" {
+  type        = string
+  description = "The ID of the resource for diagnostic settings"
 }

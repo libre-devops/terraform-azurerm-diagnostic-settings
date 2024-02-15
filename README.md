@@ -33,9 +33,8 @@ resource "azurerm_monitor_diagnostic_setting" "diagnostic_settings" {
     content {
       category       = enabled_log.value.category
       category_group = enabled_log.value.category_group
-      enabled        = enabled_log.value.enabled
       dynamic "retention_policy" {
-        for_each = enabled_log.value.retention_policy
+        for_each = enabled_log.value.retention_policy != null ? [enabled_log.value.retention_policy] : []
         content {
           enabled = retention_policy.value.enabled
           days    = retention_policy.value.days
@@ -49,8 +48,9 @@ resource "azurerm_monitor_diagnostic_setting" "diagnostic_settings" {
     content {
       category = metric.value.category
       enabled  = metric.value.enabled
+
       dynamic "retention_policy" {
-        for_each = metric.value.retention_policy
+        for_each = metric.value.retention_policy != null ? [metric.value.retention_policy] : []
         content {
           enabled = retention_policy.value.enabled
           days    = retention_policy.value.days
@@ -87,10 +87,10 @@ No modules.
 | <a name="input_diagnostic_settings_name"></a> [diagnostic\_settings\_name](#input\_diagnostic\_settings\_name) | The name of the diagnostic settings | `string` | `null` | no |
 | <a name="input_enable_all_logs"></a> [enable\_all\_logs](#input\_enable\_all\_logs) | Whether the allLogs category is enabled | `bool` | `true` | no |
 | <a name="input_enable_all_metrics"></a> [enable\_all\_metrics](#input\_enable\_all\_metrics) | Whether the AllMetric category is enabled | `bool` | `true` | no |
-| <a name="input_enabled_log"></a> [enabled\_log](#input\_enabled\_log) | The enabled\_log blocks | <pre>list(object({<br>    category       = optional(string)<br>    category_group = optional(string)<br>    enabled        = optional(bool)<br>    retention_policy = optional(object({<br>      enabled = optional(bool)<br>      days    = optional(number)<br>    }))<br>  }))</pre> | `[]` | no |
+| <a name="input_enabled_log"></a> [enabled\_log](#input\_enabled\_log) | The enabled\_log blocks | <pre>list(object({<br>    category       = optional(string)<br>    category_group = optional(string)<br>    retention_policy = optional(object({<br>      enabled = optional(bool)<br>      days    = optional(number)<br>    }))<br>  }))</pre> | `[]` | no |
 | <a name="input_eventhub_authorization_rule_id"></a> [eventhub\_authorization\_rule\_id](#input\_eventhub\_authorization\_rule\_id) | The rule id of the eventhub, if used | `string` | `null` | no |
 | <a name="input_eventhub_name"></a> [eventhub\_name](#input\_eventhub\_name) | The name of the eventhub, if used | `string` | `null` | no |
-| <a name="input_law_destination_type"></a> [law\_destination\_type](#input\_law\_destination\_type) | null | `string` | n/a | yes |
+| <a name="input_law_destination_type"></a> [law\_destination\_type](#input\_law\_destination\_type) | Destination type for log analytics | `string` | `null` | no |
 | <a name="input_law_id"></a> [law\_id](#input\_law\_id) | The ID of a log analytics workspace, if used | `string` | `null` | no |
 | <a name="input_log"></a> [log](#input\_log) | The log blocks, which are deprecated | <pre>list(object({<br>    category       = optional(string)<br>    category_group = optional(string)<br>    enabled        = optional(bool)<br>    retention_policy = optional(object({<br>      enabled = optional(bool)<br>      days    = optional(number)<br>    }))<br>  }))</pre> | `[]` | no |
 | <a name="input_metric"></a> [metric](#input\_metric) | The metric blocks | <pre>list(object({<br>    category = optional(string)<br>    enabled  = optional(bool)<br>    retention_policy = optional(object({<br>      enabled = optional(bool)<br>      days    = optional(number)<br>    }))<br>  }))</pre> | `[]` | no |

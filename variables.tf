@@ -44,7 +44,7 @@ variable "eventhub_name" {
 variable "law_destination_type" {
   type        = string
   description = "Destination type for log analytics"
-  default = null
+  default     = null
 }
 
 variable "law_id" {

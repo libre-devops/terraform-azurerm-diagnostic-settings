@@ -15,7 +15,7 @@ variable "diagnostic_settings" {
     })), [])
     metric = optional(list(object({
       category = string
-      enabled  = bool
+      enabled  = optional(bool, true)
     })), [])
     enable_all_logs    = optional(bool, false)
     enable_all_metrics = optional(bool, false)

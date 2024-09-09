@@ -10,7 +10,7 @@ variable "diagnostic_settings" {
     law_destination_type           = optional(string)
     partner_solution_id            = optional(string)
     enabled_log = optional(list(object({
-      category       = string
+      category       = optional(string)
       category_group = optional(string)
     })), [])
     metric = optional(list(object({

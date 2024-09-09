@@ -28,8 +28,14 @@ module "law" {
 module "diagnostic_settings" {
   source = "../../"
 
-  law_id             = module.law.law_id
-  target_resource_id = module.law.law_id
-  enable_all_logs    = true
-  enable_all_metrics = true
+  diagnostic_settings = {
+    target_resource_id   = module.law.law_id
+    storage_account_id   = null
+    eventhub_name        = null
+    law_id               = module.law.law_id
+    law_destination_type = "Dedicated"
+    partner_solution_id  = null
+    enable_all_logs      = true
+    enable_all_metrics   = true
+  }
 }

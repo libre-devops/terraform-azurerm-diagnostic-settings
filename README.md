@@ -138,5 +138,5 @@ No modules.
 |------|-------------|
 | <a name="output_diagnostic_setting_ids"></a> [diagnostic\_setting\_ids](#output\_diagnostic\_setting\_ids) | Map of logical name to the diagnostic setting id. |
 | <a name="output_diagnostic_setting_names"></a> [diagnostic\_setting\_names](#output\_diagnostic\_setting\_names) | Map of logical name to the diagnostic setting's actual name (diag-<resource> when not overridden). |
-| <a name="output_diagnostic_settings"></a> [diagnostic\_settings](#output\_diagnostic\_settings) | The full azurerm\_monitor\_diagnostic\_setting resources, keyed by logical name. |
+| <a name="output_diagnostic_settings"></a> [diagnostic\_settings](#output\_diagnostic\_settings) | Map of logical name to the setting's key attributes (id, name, target, and resolved destinations). |
 <!-- END_TF_DOCS -->

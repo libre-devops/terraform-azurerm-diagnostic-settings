@@ -1,9 +1,10 @@
 locals {
-  location = lookup(var.regions, var.loc, "uksouth")
-  rg_name  = "rg-${var.short}-${var.loc}-${terraform.workspace}-002"
-  law_name = "log-${var.short}-${var.loc}-${terraform.workspace}-002"
-  kv_name  = "kv-${var.short}-${var.loc}-${terraform.workspace}-002"
-  pip_name = "pip-${var.short}-${var.loc}-${terraform.workspace}-002"
+  location       = lookup(var.regions, var.loc, "uksouth")
+  rg_name        = "rg-${var.short}-${var.loc}-${terraform.workspace}-002"
+  law_name       = "log-${var.short}-${var.loc}-${terraform.workspace}-002"
+  law_audit_name = "log-${var.short}-${var.loc}-${terraform.workspace}-003"
+  kv_name        = "kv-${var.short}-${var.loc}-${terraform.workspace}-002"
+  pip_name       = "pip-${var.short}-${var.loc}-${terraform.workspace}-002"
 }
 
 data "azurerm_client_config" "current" {}
@@ -36,7 +37,13 @@ module "log_analytics" {
   location          = local.location
   tags              = module.tags.tags
 
-  log_analytics_workspaces = { (local.law_name) = {} }
+  # A primary workspace (the default sink) and a second one for the audit-only setting, so the two
+  # Key Vault settings ship to different sinks (Azure forbids reusing a sink for the same log category
+  # on the same resource).
+  log_analytics_workspaces = {
+    (local.law_name)       = {}
+    (local.law_audit_name) = {}
+  }
 }
 
 # Two different target resources to diagnose.
@@ -88,13 +95,15 @@ module "diagnostics" {
       enable_all_logs    = false
     }
 
-    # A second setting on the Key Vault that ships only the audit log category, with an explicit name.
+    # A second setting on the Key Vault that ships only the audit log category to a DIFFERENT
+    # workspace (overriding the module-level default sink), with an explicit name.
     "kv-audit" = {
-      target_resource_id = azurerm_key_vault.this.id
-      name               = "diag-kv-audit"
-      enable_all_logs    = false
-      enable_all_metrics = false
-      enabled_logs       = [{ category = "AuditEvent" }]
+      target_resource_id         = azurerm_key_vault.this.id
+      name                       = "diag-kv-audit"
+      log_analytics_workspace_id = module.log_analytics.workspace_ids[local.law_audit_name]
+      enable_all_logs            = false
+      enable_all_metrics         = false
+      enabled_logs               = [{ category = "AuditEvent" }]
     }
   }
 }

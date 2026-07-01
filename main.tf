@@ -1,28 +1,37 @@
-resource "azurerm_monitor_diagnostic_setting" "diagnostic_settings" {
-  count = var.diagnostic_settings != null ? 1 : 0
+# Diagnostic settings for any set of Azure resources, keyed by name. Point each setting at a target
+# resource and a destination (Log Analytics, storage, event hub, or a partner solution); set the
+# destination once at module level and every setting inherits it. By default (enable_all_logs /
+# enable_all_metrics) each setting ships ALL logs and ALL metrics, so the minimal input is just a
+# target id. Names default to diag-<resource>. Diagnostic settings have no resource group, location,
+# or tags of their own, so this module has none either.
 
-  name                           = local.diagnostic_setting_name
-  target_resource_id             = var.diagnostic_settings.target_resource_id
-  storage_account_id             = try(var.diagnostic_settings.storage_account_id, null)
-  eventhub_name                  = try(var.diagnostic_settings.eventhub_name, null)
-  eventhub_authorization_rule_id = try(var.diagnostic_settings.eventhub_authorization_rule_id, null)
-  log_analytics_workspace_id     = try(var.diagnostic_settings.law_id, null)
-  log_analytics_destination_type = try(var.diagnostic_settings.law_destination_type, null)
-  partner_solution_id            = try(var.diagnostic_settings.partner_solution_id, null)
+resource "azurerm_monitor_diagnostic_setting" "this" {
+  for_each = local.diagnostic_settings
+
+  name               = each.value.name
+  target_resource_id = each.value.target_resource_id
+
+  log_analytics_workspace_id     = each.value.log_analytics_workspace_id
+  log_analytics_destination_type = each.value.log_analytics_destination_type
+  storage_account_id             = each.value.storage_account_id
+  eventhub_name                  = each.value.eventhub_name
+  eventhub_authorization_rule_id = each.value.eventhub_authorization_rule_id
+  partner_solution_id            = each.value.partner_solution_id
 
   dynamic "enabled_log" {
-    for_each = local.adjusted_enabled_log != [] ? toset(local.adjusted_enabled_log) : []
+    for_each = each.value.logs
+
     content {
       category       = enabled_log.value.category
-      category_group = try(enabled_log.value.category_group, null)
+      category_group = enabled_log.value.category_group
     }
   }
 
-  dynamic "metric" {
-    for_each = local.adjusted_metric != [] ? toset(local.adjusted_metric) : []
+  dynamic "enabled_metric" {
+    for_each = each.value.metrics
+
     content {
-      category = metric.value.category
-      enabled  = metric.value.enabled
+      category = enabled_metric.value
     }
   }
 }
